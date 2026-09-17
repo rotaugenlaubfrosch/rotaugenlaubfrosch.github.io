@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="Franz Schwinn — Computer Science at ETH Zurich. Explore my work in machine learning, AI agents, and computer graphics through an interactive desktop.">
+  <title>Franz Schwinn | Personal workspace</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="city-background.css">
+  <script src="app.js" defer></script>
+  <script src="city-background.js" defer></script>
+</head>
+<body>
+  <div id="boot" hidden><div class="boot-brand">fs<span>_</span></div><div id="boot-lines"></div><button id="skip-boot">Skip startup ↵</button></div>
+  <div id="city-background" aria-hidden="true">
+    <video id="city-video" muted playsinline preload="auto" poster="assets/cities/zurich.jpg" disablepictureinpicture disableremoteplayback></video>
+  </div>
+  <div class="desktop-brand" aria-hidden="true"><span class="status-dot"></span> FRANZ SCHWINN <span class="brand-divider">/</span> PERSONAL WORKSPACE</div>
+  <main id="desktop" aria-label="Franz Schwinn’s portfolio desktop">
+    <nav class="desktop-icons" aria-label="Desktop applications">
+      <button class="desktop-icon" data-command="cat about.txt"><span class="icon-tile blue"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span><span>About_Me</span></button>
+      <button class="desktop-icon" data-command="cat docs/Franz-Schwinn-CV.pdf"><span class="icon-tile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H5v18h14V8Z M14 3v5h5 M8 12h8 M8 16h6"/></svg></span><span>CV_Resume</span></button>
+      <button class="desktop-icon" data-command="cat docs/Final_Thesis_Compact.pdf"><span class="icon-tile purple"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5Z M6 11v6q6 5 12 0v-6 M22 9v8"/></svg></span><span>BSc_Thesis</span></button>
+      <button class="desktop-icon" data-command="open projects"><span class="icon-tile green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18"/></svg></span><span>Projects</span></button>
+      <button class="desktop-icon" data-command="ls summaries"><span class="icon-tile amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h5v17H3Z M8 4h5v17H8Z M15 5l4-1 4 16-4 1Z M3 16h10 M3 8h10"/></svg></span><span>Summaries</span></button>
+      <button class="desktop-icon" data-command="open org-agent"><span class="icon-tile blue"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="14" rx="4"/><path d="M12 7V3 M10 3h4 M1 12v5 M23 12v5 M9 17h6"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></svg></span><span>org-agent</span></button>
+      <button class="desktop-icon" data-command="mail"><span class="icon-tile purple"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="15" rx="3"/><path d="m3 7 9 7 9-7"/></svg></span><span>Get_in_touch</span></button>
+      <button class="desktop-icon" data-command="terminal"><span class="icon-tile terminal-icon">&gt;_</span><span>Terminal</span></button>
+    </nav>
+    <div id="windows"></div>
+    <section class="city-explorer" aria-label="About these city animations">
+    <div class="wallpaper-label"><h1>Franz Schwinn<span>_</span></h1><p>These are Blender animations of some cities I made using Google Earth data. Play around with the below controls and navigate through the cities! :)</p></div>
+    <aside class="workspace-widget city-controls" aria-label="City background controls">
+      <div class="widget-heading"><span>~/city-explorer</span><span id="city-status" role="status">Loading Zürich…</span></div>
+      <div class="city-buttons" role="group" aria-label="Choose city">
+        <button data-city="zurich" aria-pressed="true">Zürich</button>
+        <button data-city="madrid" aria-pressed="false">Madrid</button>
+        <button data-city="budapest" aria-pressed="false">Budapest</button>
+      </div>
+      <div class="camera-path-label"><label for="camera-path">CAMERA PATH</label><output id="camera-position" for="camera-path">0%</output></div>
+      <input id="camera-path" type="range" min="0" max="1000" step="1" value="0" aria-label="Camera path position" aria-valuetext="Start of Zürich camera path" disabled>
+      <div class="city-transport"><button id="motion-toggle" aria-label="Play camera tour" aria-pressed="false" disabled>▷ Play</button><button id="reset-camera" aria-label="Return to start of camera path" disabled>↶ Reset</button><span>Scroll or drag to explore</span></div>
+      <button id="retry-city" hidden>Retry loading video ↻</button>
+    </aside>
+    </section>
+    <div class="desktop-hint">Scroll the desktop to explore the city · Click an icon to open a window</div>
+  </main>
+  <footer id="taskbar">
+    <button class="start-button" data-command="cat about.txt" title="About Franz">fs<span>_</span></button>
+    <button id="show-desktop" title="Show desktop" aria-label="Show desktop">▦</button>
+    <div id="running-apps" aria-label="Open windows"></div>
+    <div class="system-status"><span class="status-dot"></span><span></span></div>
+    <time id="clock"></time>
+  </footer>
+  <noscript><section class="no-js"><h1>Franz Schwinn</h1><p>MSc Computer Science at ETH Zurich. Machine learning, AI agents, computer graphics, and creative work.</p><p>Enable JavaScript for the interactive desktop, or explore my documents:</p><a href="docs/Franz-Schwinn-CV.pdf">CV</a> · <a href="docs/Final_Thesis_Compact.pdf">Thesis</a> · <a href="docs/CIL_Project.pdf">Depth estimation</a> · <a href="docs/IML.pdf">Machine Learning summary</a> · <a href="docs/PPROG.pdf">Parallel Programming summary</a> · <a href="docs/AW.pdf">Algorithms and Probability summary</a><p><a href="https://github.com/rotaugenlaubfrosch/org-agent">org-agent</a> · <a href="mailto:fschwinn@proton.me">Contact</a></p></section></noscript>
+</body>
+</html>

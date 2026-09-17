@@ -1,0 +1,112 @@
+/* The video is a desktop wallpaper; app windows remain independent scroll areas. */
+#city-background {
+  position: fixed;
+  inset: 0;
+  background: #09090b url("assets/cities/zurich.jpg") center / cover no-repeat;
+  pointer-events: none;
+}
+#city-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(5,9,16,.53), rgba(5,9,16,.2) 65%),
+    linear-gradient(0deg, rgba(5,9,16,.55), transparent 45%, rgba(5,9,16,.3));
+}
+#city-video { width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+#city-background.ready #city-video { opacity: 1; }
+/* Dark translucent surfaces stay readable without re-blurring video every frame. */
+.window, .city-controls, #taskbar { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.desktop-brand { text-shadow: 0 1px 8px #000; }
+.desktop-icon { text-shadow: 0 1px 6px #000; }
+.city-explorer {
+  position: absolute;
+  top: clamp(70px, 16vh, 175px);
+  right: 3%;
+  width: clamp(300px, 30vw, 430px);
+  display: grid;
+  gap: 14px;
+}
+.city-explorer .wallpaper-label {
+  position: static;
+  text-align: left;
+  text-shadow: 0 2px 20px #000b;
+}
+.city-explorer .wallpaper-label h1 { font-size: clamp(32px, 3.4vw, 49px); margin: 0 0 18px; }
+.city-explorer .wallpaper-label p {
+  max-width: none;
+  margin: 0;
+  padding: 15px 17px;
+  border: 1px solid #91b8eb35;
+  border-left: 3px solid #82b3f7;
+  border-radius: 7px;
+  background: rgba(10,16,26,.9);
+  color: #f0f5fc;
+  font: 15px/1.75 var(--ui);
+  text-shadow: none;
+}
+.desktop-hint { color: #c1cede; text-shadow: 0 1px 7px #000; }
+.city-explorer .city-controls { position: static; width: 100%; max-width: none; background: rgba(12,17,25,.94); }
+.city-controls .widget-heading { font-size: 10px; gap: 12px; }
+#city-status { color: #9babbe; font-size: 9px; text-align: right; }
+.city-buttons { display: flex; gap: 7px; margin: 17px 0; }
+.city-buttons button {
+  flex: 1;
+  padding: 9px 5px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #ffffff05;
+  font: 11px var(--mono);
+  color: #aebed4;
+}
+.city-buttons button[aria-pressed="true"] { background: #213b5e; border-color: #527aaf; color: #e3efff; }
+.camera-path-label { display: flex; justify-content: space-between; color: #a7b7cd; font: 9px var(--mono); letter-spacing: .8px; }
+#camera-path { width: 100%; height: 24px; margin: 5px 0 7px; accent-color: #7aafff; cursor: ew-resize; touch-action: none; }
+#camera-path:disabled { opacity: .4; cursor: wait; }
+.city-transport { display: flex; align-items: center; gap: 8px; }
+.city-transport button, #retry-city {
+  background: #ffffff06;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font: 10px var(--mono);
+  white-space: nowrap;
+}
+.city-transport button:disabled { opacity: .4; }
+.city-transport span { margin-left: auto; font: 8px/1.6 var(--mono); color: #9aa9bc; text-align: right; }
+#retry-city { margin-top: 10px; width: 100%; color: #b7d4ff; }
+.window, .city-controls { touch-action: auto; }
+@media (max-width: 700px) {
+  .city-explorer {
+    top: auto;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    gap: 8px;
+  }
+  .city-explorer .wallpaper-label h1 { font-size: 23px; letter-spacing: -.6px; margin: 0 0 8px; }
+  .city-explorer .wallpaper-label p { padding: 9px 12px; font-size: 12px; line-height: 1.6; }
+  .city-controls {
+    padding: 10px 13px;
+  }
+  .city-controls .widget-heading { font-size: 9px; }
+  .city-buttons { margin: 9px 0; }
+  .city-buttons button { padding: 7px 5px; font-size: 10px; }
+  .camera-path-label { font-size: 8px; }
+  #camera-path { margin: 0; height: 24px; }
+  .city-transport button { padding: 5px 8px; }
+  .city-transport span { font-size: 8px; }
+  .desktop-hint { display: none; }
+  .window { height: calc(100% - 255px - var(--city-explorer-height, 290px)) !important; min-height: 120px; }
+  .window.maximized { height: calc(100% - 66px - var(--city-explorer-height, 290px)) !important; }
+}
+@media (max-height: 740px) and (max-width: 700px) {
+  .window, .window.maximized { top: 46px !important; height: calc(100% - 66px - var(--city-explorer-height, 290px)) !important; }
+}
+@media (max-height: 600px) and (min-width: 701px) {
+  .city-explorer { top: 50px; gap: 8px; }
+  .city-explorer .wallpaper-label h1 { font-size: 27px; margin-bottom: 8px; }
+  .city-explorer .wallpaper-label p { font-size: 12px; line-height: 1.5; padding: 9px 12px; }
+  .city-explorer .city-controls { padding: 10px 13px; }
+  .city-buttons { margin: 8px 0; }
+}
