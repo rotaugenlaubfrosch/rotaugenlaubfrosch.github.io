@@ -19,6 +19,10 @@
   let playing = false;
   let revision = 0;
   let touchY = null;
+  let wantsPlayback = false;
+  let autoplayBlocked = false;
+  let playPending = false;
+  let playAttempt = 0;
 
   // Stop one frame before duration to avoid a blank end frame on some decoders.
   const endTime = () => Math.max(0, (Number.isFinite(video.duration) ? video.duration : 0) - 1 / 60);
@@ -37,6 +41,11 @@
   }
 
   function pause() {
+    wantsPlayback = false;
+    autoplayBlocked = false;
+    playPending = false;
+    playAttempt++;
+    video.autoplay = false;
     playing = false;
     video.pause();
     updatePlayback();
@@ -76,6 +85,10 @@
     video.poster = `assets/cities/${city}.jpg`;
     video.src = `assets/cities/${city}.mp4?v=60fps`;
     video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    wantsPlayback = !motionPreference.matches && !document.hidden;
+    video.autoplay = wantsPlayback;
     video.defaultPlaybackRate = 0.5;
     video.playbackRate = 0.5;
     slider.disabled = play.disabled = reset.disabled = true;
@@ -86,18 +99,21 @@
     });
     showPosition();
     video.load();
+    // Request playback immediately: some mobile browsers defer loadeddata until play().
+    if (wantsPlayback) startTour();
   }
 
-  video.addEventListener("loadeddata", () => {
+  function mediaReady() {
     if (!Number.isFinite(video.duration) || !video.duration) return;
     ready = true;
-    background.classList.add("ready");
+    if (video.readyState >= 2) background.classList.add("ready");
     slider.disabled = play.disabled = reset.disabled = false;
-    status.textContent = `${cities[city]} · Ready`;
+    if (!autoplayBlocked) status.textContent = `${cities[city]} · ${playing ? "Playing" : "Ready"}`;
     showPosition();
     queueSeek();
-    if (!motionPreference.matches && !document.hidden) startTour();
-  });
+    if (wantsPlayback && !autoplayBlocked && !playPending && video.paused && !document.hidden) startTour();
+  }
+  ["loadedmetadata", "loadeddata", "canplay"].forEach(event => video.addEventListener(event, mediaReady));
   video.addEventListener("seeked", () => {
     if (!ready) return;
     status.textContent = `${cities[city]} · Ready`;
@@ -116,7 +132,20 @@
   video.addEventListener("waiting", () => {
     if (ready) status.textContent = "Buffering…";
   });
-  video.addEventListener("playing", () => { status.textContent = `${cities[city]} · Playing`; });
+  video.addEventListener("playing", () => {
+    if (!wantsPlayback || document.hidden) { pause(); return; }
+    playing = true;
+    autoplayBlocked = false;
+    video.playbackRate = 0.5;
+    background.classList.add("ready");
+    updatePlayback();
+    status.textContent = `${cities[city]} · Playing`;
+  });
+  video.addEventListener("pause", () => {
+    if (!video.paused) return;
+    playing = false;
+    updatePlayback();
+  });
   video.addEventListener("error", () => {
     if (!video.error) return;
     pause();
@@ -136,28 +165,45 @@
   slider.addEventListener("input", () => scrub(Number(slider.value) / 1000));
   reset.addEventListener("click", () => scrub(0));
   async function startTour() {
-    if (!ready) return;
-    if (targetTime >= endTime() - .1) {
+    if (playPending || video.error || document.hidden) return;
+    if (ready && targetTime >= endTime() - .1) {
       targetTime = 0;
       video.currentTime = 0;
       showPosition();
     }
     const currentRevision = revision;
+    const currentAttempt = ++playAttempt;
+    wantsPlayback = true;
+    autoplayBlocked = false;
+    playPending = true;
+    video.muted = true;
     video.playbackRate = 0.5;
     playing = true;
     updatePlayback();
     try {
       await video.play();
-    } catch {
-      // Switching cities cancels the old play promise; it must not affect the new city.
-      if (currentRevision !== revision) return;
+    } catch (error) {
+      // Ignore promises superseded by a city switch, pause, reset, or manual scrub.
+      if (currentRevision !== revision || currentAttempt !== playAttempt) return;
       pause();
-      status.textContent = "Use scroll or the slider";
+      if (error.name === "NotAllowedError") {
+        wantsPlayback = true;
+        autoplayBlocked = true;
+        status.textContent = "Tap to start the city tour";
+      } else status.textContent = "Use Play to start the tour";
+    } finally {
+      if (currentAttempt === playAttempt) playPending = false;
     }
   }
   play.addEventListener("click", () => {
     if (playing) pause();
     else startTour();
+  });
+  // A real tap/click provides user activation. Explicit playback controls handle
+  // their own actions; an intentional pause or scrub clears this retry flag.
+  document.addEventListener("click", event => {
+    if (!event.isTrusted || event.target.closest(".city-controls")) return;
+    if (autoplayBlocked && wantsPlayback && !motionPreference.matches) startTour();
   });
 
   function isWallpaper(target) {
