@@ -177,7 +177,8 @@ function openWindow(id) {
     body.innerHTML = `<div id="terminal-output" role="log" aria-live="polite" aria-label="Command output"></div><form id="terminal-form" autocomplete="off"><label for="command-input">franz<span style="color:#7789a5">@</span>workspace <span style="color:#7598c7">~</span> ❯</label><input id="command-input" aria-label="Terminal command" spellcheck="false" autocapitalize="off" autocomplete="off"></form>`;
   } else if (doc) {
     body.classList.add("document-body");
-    body.innerHTML = `<div class="document-tools"><span>${doc.file}</span><a href="docs/${doc.file}" target="_blank" rel="noopener">Open PDF ↗</a><a href="docs/${doc.file}" download>↓ Download</a></div><p class="document-description">${doc.description}</p><div class="pdf-mobile-note">If the preview isn’t supported on your device, use <a href="docs/${doc.file}" target="_blank" rel="noopener">Open PDF ↗</a>.</div><iframe class="pdf-viewer" src="docs/${doc.file}" title="${doc.title}"></iframe>`;
+    const viewerUrl = `docs/${doc.file}#pagemode=none&navpanes=0`;
+    body.innerHTML = `<div class="document-tools"><span>${doc.file}</span><a href="${viewerUrl}" target="_blank" rel="noopener">Open PDF ↗</a><a href="docs/${doc.file}" download>↓ Download</a></div><p class="document-description">${doc.description}</p><div class="pdf-mobile-note">If the preview isn’t supported on your device, use <a href="${viewerUrl}" target="_blank" rel="noopener">Open PDF ↗</a>.</div><iframe class="pdf-viewer" src="${viewerUrl}" title="${doc.title}"></iframe>`;
   } else body.innerHTML = app.content();
   $("#windows").append(win);
   const task = document.createElement("button");
