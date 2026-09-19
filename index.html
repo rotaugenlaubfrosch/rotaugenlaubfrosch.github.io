@@ -31,7 +31,7 @@
     </nav>
     <div id="windows"></div>
     <section class="city-explorer" aria-label="About these city animations">
-    <div class="wallpaper-label"><h1>Franz Schwinn<span>_</span></h1><p>These are Blender animations of some cities I made using Google Earth data. Play around with the below controls and navigate through the cities! :)</p></div>
+    <div class="wallpaper-label"><h1>Franz Schwinn<span>_</span></h1><p>The background shows Blender animations of some cities I made using Google Earth data. Play around with the below controls and navigate through the cities! :)</p></div>
     <aside class="workspace-widget city-controls" aria-label="City background controls">
       <div class="widget-heading"><span>~/city-explorer</span><span id="city-status" role="status">Loading Zürich…</span></div>
       <div class="city-buttons" role="group" aria-label="Choose city">
@@ -41,7 +41,7 @@
       </div>
       <div class="camera-path-label"><label for="camera-path">CAMERA PATH</label><output id="camera-position" for="camera-path">0%</output></div>
       <input id="camera-path" type="range" min="0" max="1000" step="1" value="0" aria-label="Camera path position" aria-valuetext="Start of Zürich camera path" disabled>
-      <div class="city-transport"><button id="motion-toggle" aria-label="Play camera tour" aria-pressed="false" disabled>▷ Play</button><button id="reset-camera" aria-label="Return to start of camera path" disabled>↶ Reset</button><span>Scroll or drag to explore</span></div>
+      <div class="city-transport"><button id="motion-toggle" aria-label="Play camera tour" aria-pressed="false" disabled>▷ Play</button><button id="reset-camera" aria-label="Return to start of camera path" disabled>↶ Reset</button><button id="desktop-toggle" aria-label="Hide desktop" aria-pressed="false" aria-controls="windows">▦ Hide desktop</button><span>Scroll or drag to explore</span></div>
       <button id="retry-city" hidden>Retry loading video ↻</button>
     </aside>
     </section>

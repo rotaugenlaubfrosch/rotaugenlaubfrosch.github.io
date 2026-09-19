@@ -12,8 +12,9 @@
   background: linear-gradient(90deg, rgba(5,9,16,.53), rgba(5,9,16,.2) 65%),
     linear-gradient(0deg, rgba(5,9,16,.55), transparent 45%, rgba(5,9,16,.3));
 }
-#city-video { width: 100%; height: 100%; object-fit: cover; opacity: 0; }
-#city-background.ready #city-video { opacity: 1; }
+/* Keep the muted inline video visible from the start: mobile Safari can defer
+   autoplay for invisible media. Its poster covers loading before the first frame. */
+#city-video { width: 100%; height: 100%; object-fit: cover; }
 /* Dark translucent surfaces stay readable without re-blurring video every frame. */
 .window, .city-controls, #taskbar { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .desktop-brand { text-shadow: 0 1px 8px #000; }
@@ -62,7 +63,7 @@
 .camera-path-label { display: flex; justify-content: space-between; color: #a7b7cd; font: 9px var(--mono); letter-spacing: .8px; }
 #camera-path { width: 100%; height: 24px; margin: 5px 0 7px; accent-color: #7aafff; cursor: ew-resize; touch-action: none; }
 #camera-path:disabled { opacity: .4; cursor: wait; }
-.city-transport { display: flex; align-items: center; gap: 8px; }
+.city-transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .city-transport button, #retry-city {
   background: #ffffff06;
   border: 1px solid var(--border);
@@ -75,6 +76,18 @@
 .city-transport span { margin-left: auto; font: 8px/1.6 var(--mono); color: #9aa9bc; text-align: right; }
 #retry-city { margin-top: 10px; width: 100%; color: #b7d4ff; }
 .window, .city-controls { touch-action: auto; }
+/* Hide presentation only; open windows and terminal sessions retain their state. */
+.desktop-hidden .desktop-brand,
+.desktop-hidden .desktop-icons,
+.desktop-hidden #windows,
+.desktop-hidden .wallpaper-label,
+.desktop-hidden .desktop-hint,
+.desktop-hidden #taskbar,
+.desktop-hidden .city-transport > span { display: none !important; }
+.desktop-hidden #desktop { bottom: 0; }
+.desktop-hidden .city-explorer { top: auto; bottom: 20px; }
+.desktop-hidden #city-background::after { opacity: 0; }
+#desktop-toggle[aria-pressed="true"] { background: #213b5e; border-color: #527aaf; color: #e3efff; }
 @media (max-width: 700px) {
   .city-explorer {
     top: auto;
@@ -94,7 +107,7 @@
   .city-buttons button { padding: 7px 5px; font-size: 10px; }
   .camera-path-label { font-size: 8px; }
   #camera-path { margin: 0; height: 24px; }
-  .city-transport button { padding: 5px 8px; }
+  .city-transport button { padding: 7px 8px; min-height: 36px; }
   .city-transport span { font-size: 8px; }
   .desktop-hint { display: none; }
   .window { height: calc(100% - 255px - var(--city-explorer-height, 290px)) !important; min-height: 120px; }

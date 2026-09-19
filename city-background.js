@@ -11,6 +11,7 @@
   const play = document.querySelector("#motion-toggle");
   const reset = document.querySelector("#reset-camera");
   const retry = document.querySelector("#retry-city");
+  const desktopToggle = document.querySelector("#desktop-toggle");
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
   let city = "zurich";
   let ready = false;
@@ -87,7 +88,7 @@
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
-    wantsPlayback = !motionPreference.matches && !document.hidden;
+    wantsPlayback = !motionPreference.matches;
     video.autoplay = wantsPlayback;
     video.defaultPlaybackRate = 0.5;
     video.playbackRate = 0.5;
@@ -133,7 +134,8 @@
     if (ready) status.textContent = "Buffering…";
   });
   video.addEventListener("playing", () => {
-    if (!wantsPlayback || document.hidden) { pause(); return; }
+    if (!wantsPlayback) { pause(); return; }
+    if (document.hidden) { video.pause(); return; }
     playing = true;
     autoplayBlocked = false;
     video.playbackRate = 0.5;
@@ -185,12 +187,17 @@
     } catch (error) {
       // Ignore promises superseded by a city switch, pause, reset, or manual scrub.
       if (currentRevision !== revision || currentAttempt !== playAttempt) return;
-      pause();
+      // Mobile browsers may interrupt a pending play while loading or suspending
+      // the page. Keep playback intent so canplay / visibility can retry it.
+      playing = false;
+      updatePlayback();
       if (error.name === "NotAllowedError") {
-        wantsPlayback = true;
         autoplayBlocked = true;
         status.textContent = "Tap to start the city tour";
-      } else status.textContent = "Use Play to start the tour";
+      } else if (error.name !== "AbortError") {
+        pause();
+        status.textContent = "Use Play to start the tour";
+      }
     } finally {
       if (currentAttempt === playAttempt) playPending = false;
     }
@@ -201,9 +208,27 @@
   });
   // A real tap/click provides user activation. Explicit playback controls handle
   // their own actions; an intentional pause or scrub clears this retry flag.
-  document.addEventListener("click", event => {
-    if (!event.isTrusted || event.target.closest(".city-controls")) return;
-    if (autoplayBlocked && wantsPlayback && !motionPreference.matches) startTour();
+  function retryAutoplay(event) {
+    if (!event.isTrusted || event.target.closest("#motion-toggle, #reset-camera, #camera-path, #retry-city, [data-city]")) return;
+    if (wantsPlayback && video.paused && !motionPreference.matches) startTour();
+  }
+  document.addEventListener("touchend", retryAutoplay, { passive: true });
+  document.addEventListener("click", retryAutoplay);
+
+  function setDesktopHidden(hidden) {
+    document.body.classList.toggle("desktop-hidden", hidden);
+    desktopToggle.textContent = hidden ? "▦ Show desktop" : "▦ Hide desktop";
+    desktopToggle.setAttribute("aria-pressed", String(hidden));
+    desktopToggle.setAttribute("aria-label", hidden ? "Show desktop" : "Hide desktop");
+  }
+  desktopToggle.addEventListener("click", () => {
+    setDesktopHidden(!document.body.classList.contains("desktop-hidden"));
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && document.body.classList.contains("desktop-hidden")) {
+      setDesktopHidden(false);
+      desktopToggle.focus();
+    }
   });
 
   function isWallpaper(target) {
@@ -227,7 +252,18 @@
   }, { passive: false });
   desktop.addEventListener("touchend", () => { touchY = null; });
   desktop.addEventListener("touchcancel", () => { touchY = null; });
-  document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+  function resumePlayback() {
+    if (wantsPlayback && !autoplayBlocked && video.paused && !motionPreference.matches) startTour();
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      // Suspend decoding without turning an automatic suspension into a user pause.
+      playAttempt++;
+      playPending = false;
+      video.pause();
+    } else resumePlayback();
+  });
+  window.addEventListener("pageshow", resumePlayback);
   motionPreference.addEventListener("change", event => {
     if (event.matches) pause();
   });
