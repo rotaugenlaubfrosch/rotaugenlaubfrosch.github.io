@@ -32,7 +32,7 @@ const profileContent = () => `
   <div class="content">
     <div class="profile-heading"><img class="avatar" src="assets/franz.jpg" alt="Franz Schwinn"><div><span class="eyebrow"></span><h2>Franz Schwinn</h2><p>MSc Computer Science · Machine Intelligence<br>ETH Zurich, Switzerland</p></div></div>
     <p>Welcome to my personal portfolio site! :) Here you find some projects I have been working on in the past. Take your time to explore and navigate, and feel free to reach out if you have any questions or inputs! </p>
-    <p>Outside of the sphere of computer science, I love creating videos about geography, culture, and moving abroad. I also enjoy playing piano and going to the gym. My favourite composers are Chopin, Liszt, and Rachmaninoff.</p>
+    <p>Outside of the sphere of computer science, I love creating videos about geography, culture, and moving abroad. I also enjoy playing piano and going to the gym. My favourite composers are Chopin, Liszt, Rachmaninoff, and C418.</p>
     <h3 class="section-title">~/what_i_work_with</h3>
     <div class="tags"><span>Python</span><span>Machine learning</span><span>LangGraph</span><span>Linux / Bash</span><span>Docker</span><span>Ansible</span><span>SQL</span><span>Blender</span><span>Adobe CC / After Effects</span></div>
     <div class="actions"><button class="button" data-command="cat docs/Franz-Schwinn-CV.pdf">Read my CV ↗</button><button class="button secondary" data-command="mail">Get in touch</button></div>
